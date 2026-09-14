@@ -63,13 +63,21 @@ in `FloorPlanView`, persisted to `localStorage` per room id via `storage.js`.
 
 ## Current status of the room measurements
 
-The dimensions in `room-data.js` are **placeholders**, not the real
-measurements from the hand-drawn sketch — some handwritten numbers and a few
-labels (`C`, `T/D` on the floor plan; `SW`/`45` and a similar compass-looking
-number on the two wall views) were ambiguous enough to need confirmation
-from the user rather than a guess. Don't treat current values as real. See
-`PROGRESS.md` for the open question, and update `room-data.js` once
-confirmed.
+The room is the kitchen (`Cozinha`). The dimensions in `room-data.js` are
+still **placeholders** — a rough rectangle, not the real wall-by-wall
+geometry from the hand-drawn sketch (the actual room has notches/jogs). The
+user hand-measured everything with a tape measure, so the numbers may have
+small inconsistencies wall-to-wall; average those out rather than treating
+any single reading as gospel. Update `room-data.js` once the user provides
+the confirmed values — see `PROGRESS.md` for what's still open, including
+data for a few more rooms the user plans to add later.
+
+The sketch labels that looked like data turned out not to matter for this
+app: `C` = "cozinha", and `T/D` was the user's abandoned attempt to note
+door/power-socket (`tomada`) info per wall — never finished, but see "Ideas
+for later" in `PROGRESS.md`. Likewise `SW`/`45` on the wall-elevation
+sketches don't encode a compass direction or anything else worth modeling;
+the wall views are just labeled `Parede 1` / `Parede 2`.
 
 ## Path to a sellable version (later, not now)
 

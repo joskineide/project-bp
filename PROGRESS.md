@@ -18,21 +18,27 @@ check items off, add new ones, don't let it drift from reality.
 - [x] Read-only wall elevation views (2 tabs)
 - [x] PWA setup: manifest + service worker, installable on a phone, works
       offline
+- [x] Resolved sketch label meanings with the user: `C` = cozinha, `T/D` was
+      an abandoned power-socket note, `SW`/`45` don't encode anything worth
+      modeling. Room renamed to `Cozinha`; wall-view tabs renamed to
+      `Parede 1` / `Parede 2` (dropped the misleading "SW").
 
 ## Next
 
-- [ ] **Confirm real measurements with the user against the original sketch**
-      (photo of the notebook). Specifically need:
-  - What `C` and `T/D` mean on the floor-plan sketch (room label? corner
-    reference?)
-  - What `SW`/`45` and the compass-looking number on the third sketch mean
-    (wall orientation?)
+- [ ] **Get the real measurements for the kitchen from the user** and
+      replace the placeholder rectangle in `room-data.js`:
   - The actual wall-segment breakdown — the room has notches/jogs, not a
-    plain rectangle; current `room-data.js` is a placeholder rectangle
+    plain rectangle
   - Ceiling height and door/window positions + sizes for the two wall views
-- [ ] Replace placeholder `room-data.js` with confirmed geometry
+  - Measurements are hand-taped and not 100% consistent wall-to-wall —
+    average out discrepancies rather than picking one reading arbitrarily
 - [ ] Add door/window openings to the floor plan (data model already
       supports `openings`, none populated yet)
+- [ ] More rooms are coming — the user has additional rooms to measure and
+      hand over. Don't restructure `room-data.js` into a multi-room list
+      preemptively; wait until there's a second room's data in hand (the
+      seam for that is described in CLAUDE.md's "Path to a sellable
+      version")
 - [ ] Test the installed PWA on an actual phone (Add to Home Screen) — check
       touch drag feels right, canvas sizing on small screens
 - [ ] Walk through the app with the family member once the real house data
@@ -40,6 +46,10 @@ check items off, add new ones, don't let it drift from reality.
 
 ## Ideas for later (not started, not committed to)
 
+- Power-socket (tomada) tracking per wall — the user's original sketch tried
+  to note this (`T/D`) and gave up by hand; an app-assisted version (tap a
+  point on a wall, mark it as a socket, optionally count per wall) is a
+  natural fit once the core layout tool is solid
 - Multiple rooms for the same house
 - Multiple projects/houses (only worth it if this turns into a sellable
   product — see "Path to a sellable version" in `CLAUDE.md`)

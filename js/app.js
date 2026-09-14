@@ -5,7 +5,7 @@ import { renderWallView } from './wall-view.js';
 
 const tabs = document.querySelectorAll('.tab-button');
 const panels = document.querySelectorAll('.tab-panel');
-const wallsRendered = { 'wall-sw': false, 'wall-2': false };
+const wallsRendered = { 'wall-1': false, 'wall-2': false };
 
 tabs.forEach((btn) => {
   btn.addEventListener('click', () => {
@@ -59,9 +59,9 @@ floorView.onSelectionChange = (item) => {
 };
 
 function onTabShown(targetId) {
-  if (targetId === 'wall-sw' && !wallsRendered['wall-sw']) {
-    renderWallView(document.getElementById('wall-sw-canvas'), ROOM.wallViews[0]);
-    wallsRendered['wall-sw'] = true;
+  if (targetId === 'wall-1' && !wallsRendered['wall-1']) {
+    renderWallView(document.getElementById('wall-1-canvas'), ROOM.wallViews[0]);
+    wallsRendered['wall-1'] = true;
   }
   if (targetId === 'wall-2' && !wallsRendered['wall-2']) {
     renderWallView(document.getElementById('wall-2-canvas'), ROOM.wallViews[1]);
