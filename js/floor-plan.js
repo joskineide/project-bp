@@ -13,6 +13,7 @@ export class FloorPlanView {
     this.room = room;
     this.polygon = segmentsToPolygon(room.floorPlan.startPoint, room.floorPlan.segments);
     this.bounds = polygonBounds(this.polygon);
+    this.fixedItems = room.fixedFurniture || [];
     this.items = loadLayout(room.id) || [];
     this.selectedId = null;
     this.dragging = null;
@@ -189,6 +190,7 @@ export class FloorPlanView {
 
     this._drawGrid(cssW, cssH);
     this._drawWalls();
+    this._drawFixedItems();
     this._drawItems();
   }
 
@@ -247,6 +249,40 @@ export class FloorPlanView {
       ctx.fillText(`${len.toFixed(2)} m`, s.x, s.y - 6);
     }
     ctx.restore();
+  }
+
+  // Fixed pieces that came with the house (sinks, built-in cabinets, a
+  // pillar...): drawn like furniture but with a dashed border and a lock
+  // glyph, and never part of hit-testing/dragging — they aren't in
+  // `this.items` and can't be selected, moved, or removed from the app.
+  _drawFixedItems() {
+    const { ctx } = this;
+    this.fixedItems.forEach((item) => {
+      ctx.save();
+      const s = this.toScreen(item.x, item.y);
+      ctx.translate(s.x, s.y);
+      ctx.rotate((item.rotation * Math.PI) / 180);
+      ctx.fillStyle = item.color;
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 3]);
+
+      const w = item.width * this.scale;
+      const h = item.height * this.scale;
+      ctx.beginPath();
+      ctx.rect(-w / 2, -h / 2, w, h);
+      ctx.fill();
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.rotate((-item.rotation * Math.PI) / 180);
+      ctx.fillStyle = '#222';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`🔒 ${item.label}`, 0, 0);
+      ctx.restore();
+    });
   }
 
   _drawItems() {

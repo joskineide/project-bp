@@ -22,23 +22,35 @@ check items off, add new ones, don't let it drift from reality.
       an abandoned power-socket note, `SW`/`45` don't encode anything worth
       modeling. Room renamed to `Cozinha`; wall-view tabs renamed to
       `Parede 1` / `Parede 2` (dropped the misleading "SW").
+- [x] Got the full house room map + measurement sketches for all six rooms.
+      Resolved inconsistent room labels across sketches: `BAR`→`BR`
+      (banheiro), `BPR`→`BER1` (quarto 1) — see CLAUDE.md.
+- [x] Kitchen floor plan is real data now: 3.84 x 1.83 outer footprint, plus
+      a `fixedFurniture` list (pia, tanque, armário de cozinha,
+      guarda-roupa, a pillar/duct) with reconstructed positions. Added
+      fixed-furniture rendering to `FloorPlanView` (dashed border + 🔒,
+      not draggable/deletable).
 
 ## Next
 
-- [ ] **Get the real measurements for the kitchen from the user** and
-      replace the placeholder rectangle in `room-data.js`:
-  - The actual wall-segment breakdown — the room has notches/jogs, not a
-    plain rectangle
-  - Ceiling height and door/window positions + sizes for the two wall views
-  - Measurements are hand-taped and not 100% consistent wall-to-wall —
-    average out discrepancies rather than picking one reading arbitrarily
-- [ ] Add door/window openings to the floor plan (data model already
-      supports `openings`, none populated yet)
-- [ ] More rooms are coming — the user has additional rooms to measure and
-      hand over. Don't restructure `room-data.js` into a multi-room list
-      preemptively; wait until there's a second room's data in hand (the
-      seam for that is described in CLAUDE.md's "Path to a sellable
-      version")
+- [ ] **Visually review the kitchen in the app** against the original
+      sketch/tape measurements — this is faster than more back-and-forth
+      over text. In particular confirm:
+  - The unidentified 1.11 x 0.35 element near the bottom-right corner
+    (placeholder labeled "? (a confirmar)" in the app right now)
+  - That the fixed-furniture positions actually look right against the
+    real room
+- [ ] Kitchen wall elevations (`wallViews` in `room-data.js`) are still
+      placeholder — deferred at the user's request until the floor plan
+      is confirmed solid. Come back to these (heights, door/window
+      positions) once the above is confirmed.
+- [ ] Get floor-plan measurements encoded for the other five rooms: Sala
+      (LR), Varanda (BAL), Quarto 1 (BER1), Quarto 2 (BER2), Banheiro (BR).
+      Some of this data has already been provided by the user (sketches
+      exist) but isn't transcribed into code yet.
+- [ ] Once a second room's data is ready to add, do the multi-room
+      restructure described in CLAUDE.md's "Path to a sellable version" —
+      don't do it before then.
 - [ ] Test the installed PWA on an actual phone (Add to Home Screen) — check
       touch drag feels right, canvas sizing on small screens
 - [ ] Walk through the app with the family member once the real house data

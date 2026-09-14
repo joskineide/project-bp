@@ -61,23 +61,37 @@ wall elevation drawings of that same room):
 Furniture placed by the user is *not* in `room-data.js` — it's runtime state
 in `FloorPlanView`, persisted to `localStorage` per room id via `storage.js`.
 
+`room-data.js` can also list `fixedFurniture`: pieces that came with the
+house (sinks, built-in cabinets, a pillar/duct) with fully-specified
+position — not draggable, deletable, or part of hit-testing. `FloorPlanView`
+renders them (`_drawFixedItems`) from `room.fixedFurniture` directly, kept
+separate from `this.items` (the user's movable layout). Use `type: 'wall'`
+for a structural element (pillar, partition) and `type: 'furniture'` for a
+fixed appliance/cabinet — both render the same way today (dashed border +
+lock glyph), the type is just documentation for now.
+
 ## Current status of the room measurements
 
-The room is the kitchen (`Cozinha`). The dimensions in `room-data.js` are
-still **placeholders** — a rough rectangle, not the real wall-by-wall
-geometry from the hand-drawn sketch (the actual room has notches/jogs). The
-user hand-measured everything with a tape measure, so the numbers may have
-small inconsistencies wall-to-wall; average those out rather than treating
-any single reading as gospel. Update `room-data.js` once the user provides
-the confirmed values — see `PROGRESS.md` for what's still open, including
-data for a few more rooms the user plans to add later.
+The house has (at least) six rooms: `Cozinha` (K), `Sala` (LR), `Varanda`
+(BAL), `Quarto 1` / `Quarto 2` (BER1/BER2), and `Banheiro` (BR) — the user's
+labels were inconsistent across sketches while they were still figuring out
+a naming convention (a room-map sketch labeled the bathroom `BAR` and the
+first bedroom `BPR` at one point); by the last round of clarification the
+mapping above is confirmed. Only the kitchen is modeled in `room-data.js` so
+far — the app is still single-room (see "Path to a sellable version" below
+for the intended seam once a second room's data is ready to add).
 
-The sketch labels that looked like data turned out not to matter for this
-app: `C` = "cozinha", and `T/D` was the user's abandoned attempt to note
-door/power-socket (`tomada`) info per wall — never finished, but see "Ideas
-for later" in `PROGRESS.md`. Likewise `SW`/`45` on the wall-elevation
-sketches don't encode a compass direction or anything else worth modeling;
-the wall views are just labeled `Parede 1` / `Parede 2`.
+The kitchen's outer footprint (3.84 x 1.83) and its fixed furniture
+(`fixedFurniture` in `room-data.js`) are reconstructed from the user's hand
+measurements and are a solid v1, not placeholders — reconstructed by
+converting each wall's "rectangle + spacing" description into an x-position
+along that wall, treating the user's "glass wall/door" mention as occupying
+one of the gaps rather than adding extra length (both walls' totals land
+within ~1cm of 3.84m either way, which is within the hand-measurement
+tolerance the user warned about). One fixed element (a 1.11 x 0.35 piece
+near the bottom-right corner) is still unidentified — see `PROGRESS.md`.
+Wall elevations/heights (`wallViews`) are still placeholders: the user
+explicitly asked to defer those until the floor plan is solid.
 
 ## Path to a sellable version (later, not now)
 
