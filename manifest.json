@@ -1,0 +1,19 @@
+{
+  "name": "Planta da Casa",
+  "short_name": "Planta",
+  "description": "Visualizador de planta baixa e móveis em escala",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f5f0",
+  "theme_color": "#2c6e49",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
