@@ -54,8 +54,98 @@ document.getElementById('btn-clear').addEventListener('click', () => {
   if (window.confirm('Remover todos os móveis do ambiente?')) floorView.clearAll();
 });
 
+const editPanel = document.getElementById('edit-panel');
+const editLabel = document.getElementById('edit-label');
+const editX = document.getElementById('edit-x');
+const editY = document.getElementById('edit-y');
+const editWidth = document.getElementById('edit-width');
+const editHeight = document.getElementById('edit-height');
+const editRadius = document.getElementById('edit-radius');
+const editRotation = document.getElementById('edit-rotation');
+const widthHeightFields = document.getElementById('edit-width-height-fields');
+const radiusField = document.getElementById('edit-radius-field');
+
+function fillEditPanel(item) {
+  if (!item) {
+    editPanel.classList.remove('visible');
+    return;
+  }
+  editPanel.classList.add('visible');
+  editLabel.value = item.label;
+  editX.value = item.x.toFixed(2);
+  editY.value = item.y.toFixed(2);
+  editRotation.value = item.rotation;
+  if (item.shape === 'circle') {
+    widthHeightFields.style.display = 'none';
+    radiusField.style.display = 'flex';
+    editRadius.value = item.radius.toFixed(2);
+  } else {
+    widthHeightFields.style.display = 'contents';
+    radiusField.style.display = 'none';
+    editWidth.value = item.width.toFixed(2);
+    editHeight.value = item.height.toFixed(2);
+  }
+}
+
+function numberOr(input, fallback, min = -Infinity) {
+  const value = parseFloat(input.value);
+  return Number.isFinite(value) ? Math.max(min, value) : fallback;
+}
+
+function applyEdits() {
+  const item = floorView.getSelectedItem();
+  if (!item) return;
+  const patch = {
+    label: editLabel.value.trim() || item.label,
+    x: numberOr(editX, item.x),
+    y: numberOr(editY, item.y),
+    rotation: numberOr(editRotation, item.rotation),
+  };
+  if (item.shape === 'circle') {
+    patch.radius = numberOr(editRadius, item.radius, 0.05);
+  } else {
+    patch.width = numberOr(editWidth, item.width, 0.05);
+    patch.height = numberOr(editHeight, item.height, 0.05);
+  }
+  floorView.updateSelectedItem(patch);
+}
+
+[editLabel, editX, editY, editWidth, editHeight, editRadius, editRotation].forEach((el) => {
+  el.addEventListener('change', applyEdits);
+});
+
+document.getElementById('btn-export').addEventListener('click', () => {
+  const data = JSON.stringify(floorView.items, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `layout-${ROOM.id}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('input-import').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const items = JSON.parse(reader.result);
+      if (!Array.isArray(items)) throw new Error('o arquivo não contém uma lista de móveis');
+      floorView.replaceItems(items);
+      fillEditPanel(null);
+    } catch (err) {
+      window.alert(`Não foi possível importar o arquivo: ${err.message}`);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
 floorView.onSelectionChange = (item) => {
   actionBar.classList.toggle('visible', Boolean(item));
+  fillEditPanel(item);
 };
 
 function onTabShown(targetId) {

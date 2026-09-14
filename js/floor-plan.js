@@ -133,6 +133,31 @@ export class FloorPlanView {
     this.render();
   }
 
+  // Public accessor so callers (e.g. the numeric edit panel in app.js) can
+  // read the selected item without reaching into "private" state.
+  getSelectedItem() {
+    return this._getSelected();
+  }
+
+  // Merges arbitrary field changes (x, y, width, height, radius, rotation,
+  // label) into the selected item — the numeric-input counterpart to
+  // drag/rotateSelected/scaleSelected.
+  updateSelectedItem(patch) {
+    const item = this._getSelected();
+    if (!item) return;
+    Object.assign(item, patch);
+    this._persist();
+    this.render();
+  }
+
+  // Replaces the whole movable layout at once (used by "Importar layout").
+  replaceItems(items) {
+    this.items = items;
+    this._select(null);
+    this._persist();
+    this.render();
+  }
+
   _getSelected() {
     return this.items.find((i) => i.id === this.selectedId) || null;
   }

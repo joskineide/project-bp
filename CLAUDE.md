@@ -41,7 +41,8 @@ js/geometry.js           Pure helpers: polygon from wall segments, hit-testing
 js/storage.js            localStorage load/save for the placed-furniture layout
 js/floor-plan.js         FloorPlanView: interactive canvas (drag/rotate/scale/delete)
 js/wall-view.js          Read-only canvas renderer for a wall elevation
-js/app.js                Wires tabs, toolbox, action bar; bootstraps everything
+js/app.js                Wires tabs, toolbox, action bar, edit panel, export/import
+tests/                   node:test suite (zero dependencies) — see "Testing" below
 ```
 
 ### Data model
@@ -92,6 +93,50 @@ tolerance the user warned about). One fixed element (a 1.11 x 0.35 piece
 near the bottom-right corner) is still unidentified — see `PROGRESS.md`.
 Wall elevations/heights (`wallViews`) are still placeholders: the user
 explicitly asked to defer those until the floor plan is solid.
+
+## Editing furniture precisely
+
+Dragging is the primary interaction, but every selected movable item also
+gets a numeric edit panel (X/Y/width-or-radius/height/rotation/label —
+`js/app.js`, wired to `FloorPlanView.updateSelectedItem`/`getSelectedItem`).
+X/Y are meters from the room's left/top. This exists specifically so
+measurements can be typed in exactly rather than eyeballed via drag — keep
+it in sync with any new draggable field you add to item objects.
+
+The floor-plan layout also has explicit "Exportar/Importar layout (.json)"
+buttons (`FloorPlanView.replaceItems`) on top of the automatic
+`localStorage` save — a deliberate backup/restore path, since `localStorage`
+alone is invisible and per-browser.
+
+## Testing
+
+`tests/*.test.mjs`, run with `node --test` (Node's built-in runner — zero
+npm dependencies, no package.json needed; `.mjs` makes Node treat the files
+as ES modules regardless of any package.json `type` field, and the default
+`.test.mjs` naming is auto-discovered). Covers:
+
+- `geometry.test.mjs` — the pure helpers (`segmentsToPolygon`,
+  `polygonBounds`, `pointInRotatedRect`, `pointInCircle`,
+  `wallSubSegments`), including the wall-opening edge cases (openings at
+  the very start/end of a wall, covering the whole wall, extending past
+  it, out-of-order input, non-axis-aligned walls).
+- `storage.test.mjs` — `loadLayout`/`saveLayout` against a stubbed
+  `localStorage` (Node has no DOM), including corrupted-JSON handling.
+- `room-data.test.mjs` — data-integrity checks on `ROOM` itself: the
+  outline actually closes, every opening references a real wall and stays
+  within its length, openings on the same wall don't overlap, every fixed/
+  default item's footprint stays inside the room bounds, ids are unique.
+  This is a regression guard for the exact class of mistakes that came up
+  while transcribing hand measurements (an item placed outside the room, a
+  wall's outline silently not closing) — extend it whenever a new room is
+  added to `room-data.js`.
+
+`FloorPlanView` and `wall-view.js` itself aren't unit tested — they're
+canvas/DOM-bound, and pulling in a DOM shim (jsdom or similar) would break
+the zero-npm-dependency rule. Changes there are checked visually (a local
+`python3 -m http.server` + a screenshot, or by hand in a browser) rather
+than automated; keep the logic they depend on (hit-testing, polygon math,
+opening rendering) in `geometry.js` so it stays covered.
 
 ## Path to a sellable version (later, not now)
 

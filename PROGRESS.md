@@ -40,6 +40,15 @@ check items off, add new ones, don't let it drift from reality.
       seeded only when there's no saved layout yet) — it's a loose
       countertop board ("Bancada"), not fixed to the house.
 
+- [x] Numeric edit panel for the selected movable item (X/Y/width or
+      radius/height/rotation/label) — precise input alongside drag, per
+      the user's request ahead of them configuring the other rooms by hand.
+- [x] Explicit "Exportar/Importar layout (.json)" buttons, on top of the
+      existing automatic `localStorage` save.
+- [x] Test suite: `tests/*.test.mjs`, run via `node --test` (zero
+      dependencies). 24 tests covering `geometry.js`, `storage.js`, and
+      `room-data.js` integrity — see "Testing" in CLAUDE.md.
+
 ## Next
 
 - [ ] **Another visual review round** — this round's biggest guess: the

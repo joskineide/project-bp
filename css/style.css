@@ -114,8 +114,64 @@ canvas {
   border-color: #e63946;
 }
 
+.edit-panel {
+  display: none;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 10px 8px;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+.edit-panel.visible {
+  display: flex;
+}
+.edit-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+  color: #555;
+  flex: 1 1 120px;
+}
+.edit-panel input {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  width: 100%;
+}
+#edit-width-height-fields {
+  display: contents;
+}
+#edit-radius-field {
+  display: none;
+}
+
+.layout-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  justify-content: center;
+  align-items: center;
+}
+.layout-actions button,
+.file-button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f8f8f6;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #444;
+}
+.file-button {
+  display: inline-flex;
+  align-items: center;
+}
+
 .clear-all {
-  margin: 0 8px 8px;
+  margin: 0;
   padding: 8px;
   border: none;
   background: none;

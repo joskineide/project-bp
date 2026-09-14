@@ -26,6 +26,33 @@
       <canvas id="floor-plan-canvas"></canvas>
     </div>
     <div id="toolbox" class="toolbox"></div>
+
+    <div id="edit-panel" class="edit-panel">
+      <label>Nome
+        <input type="text" id="edit-label" />
+      </label>
+      <label>X — da esquerda (m)
+        <input type="number" id="edit-x" step="0.01" />
+      </label>
+      <label>Y — do topo (m)
+        <input type="number" id="edit-y" step="0.01" />
+      </label>
+      <span id="edit-width-height-fields">
+        <label>Largura (m)
+          <input type="number" id="edit-width" step="0.01" min="0.05" />
+        </label>
+        <label>Profundidade (m)
+          <input type="number" id="edit-height" step="0.01" min="0.05" />
+        </label>
+      </span>
+      <label id="edit-radius-field">Raio (m)
+        <input type="number" id="edit-radius" step="0.01" min="0.05" />
+      </label>
+      <label>Rotação (°)
+        <input type="number" id="edit-rotation" step="1" />
+      </label>
+    </div>
+
     <div id="action-bar" class="action-bar">
       <button type="button" id="btn-rotate-left" title="Girar para a esquerda">↺</button>
       <button type="button" id="btn-rotate-right" title="Girar para a direita">↻</button>
@@ -33,7 +60,15 @@
       <button type="button" id="btn-scale-up" title="Aumentar">+</button>
       <button type="button" id="btn-remove" class="danger" title="Remover">🗑 Remover</button>
     </div>
-    <button type="button" id="btn-clear" class="clear-all">Limpar todos os móveis</button>
+
+    <div class="layout-actions">
+      <button type="button" id="btn-export">Exportar layout (.json)</button>
+      <label class="file-button">
+        Importar layout (.json)
+        <input type="file" id="input-import" accept="application/json" hidden />
+      </label>
+      <button type="button" id="btn-clear" class="clear-all">Limpar todos os móveis</button>
+    </div>
   </section>
 
   <section id="wall-1" class="tab-panel">
