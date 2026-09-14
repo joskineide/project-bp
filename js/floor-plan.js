@@ -1,4 +1,10 @@
-import { segmentsToPolygon, polygonBounds, pointInRotatedRect, pointInCircle } from './geometry.js';
+import {
+  segmentsToPolygon,
+  polygonBounds,
+  pointInRotatedRect,
+  pointInCircle,
+  wallSubSegments,
+} from './geometry.js';
 import { loadLayout, saveLayout } from './storage.js';
 
 const GRID_STEP = 0.5; // meters
@@ -14,7 +20,10 @@ export class FloorPlanView {
     this.polygon = segmentsToPolygon(room.floorPlan.startPoint, room.floorPlan.segments);
     this.bounds = polygonBounds(this.polygon);
     this.fixedItems = room.fixedFurniture || [];
-    this.items = loadLayout(room.id) || [];
+    // Movable but pre-placed on first load only (e.g. a loose countertop
+    // board) — once the user has a saved layout, that always wins.
+    const savedLayout = loadLayout(room.id);
+    this.items = savedLayout || (room.defaultItems || []).map((item) => ({ ...item }));
     this.selectedId = null;
     this.dragging = null;
     this.onSelectionChange = null;
@@ -189,9 +198,12 @@ export class FloorPlanView {
     ctx.clearRect(0, 0, cssW, cssH);
 
     this._drawGrid(cssW, cssH);
-    this._drawWalls();
+    this._drawWallDimensions();
     this._drawFixedItems();
     this._drawItems();
+    // Outline drawn last so it stays crisp even where fixed/movable items
+    // sit flush against a wall (their fill would otherwise paint over it).
+    this._drawWallOutline();
   }
 
   _drawGrid(cssW, cssH) {
@@ -220,22 +232,8 @@ export class FloorPlanView {
     ctx.restore();
   }
 
-  _drawWalls() {
+  _drawWallDimensions() {
     const { ctx } = this;
-    ctx.save();
-    ctx.strokeStyle = '#2c2c2c';
-    ctx.lineWidth = 4;
-    ctx.lineJoin = 'round';
-    ctx.beginPath();
-    this.polygon.forEach((p, idx) => {
-      const s = this.toScreen(p.x, p.y);
-      if (idx === 0) ctx.moveTo(s.x, s.y);
-      else ctx.lineTo(s.x, s.y);
-    });
-    ctx.closePath();
-    ctx.stroke();
-    ctx.restore();
-
     ctx.save();
     ctx.fillStyle = '#556';
     ctx.font = '12px sans-serif';
@@ -251,10 +249,47 @@ export class FloorPlanView {
     ctx.restore();
   }
 
-  // Fixed pieces that came with the house (sinks, built-in cabinets, a
-  // pillar...): drawn like furniture but with a dashed border and a lock
-  // glyph, and never part of hit-testing/dragging — they aren't in
-  // `this.items` and can't be selected, moved, or removed from the app.
+  // Draws each wall as solid, except where `room.floorPlan.openings` marks
+  // a gap: 'open' skips the line entirely (no wall), 'glass' draws a thin
+  // colored line instead of the solid black wall stroke.
+  _drawWallOutline() {
+    const { ctx } = this;
+    const openings = this.room.floorPlan.openings || [];
+    ctx.save();
+    ctx.lineJoin = 'round';
+    for (let i = 0; i < this.polygon.length - 1; i += 1) {
+      const a = this.polygon[i];
+      const b = this.polygon[i + 1];
+      const wallOpenings = openings.filter((o) => o.wall === i);
+      const parts = wallSubSegments(a, b, wallOpenings);
+      parts.forEach((part) => {
+        if (part.type === 'open') return; // no wall here — a real gap
+        const from = this.toScreen(part.from.x, part.from.y);
+        const to = this.toScreen(part.to.x, part.to.y);
+        ctx.beginPath();
+        ctx.moveTo(from.x, from.y);
+        ctx.lineTo(to.x, to.y);
+        if (part.type === 'glass') {
+          ctx.strokeStyle = '#7ec8e3';
+          ctx.lineWidth = 3;
+          ctx.setLineDash([6, 4]);
+        } else {
+          ctx.strokeStyle = '#2c2c2c';
+          ctx.lineWidth = 4;
+          ctx.setLineDash([]);
+        }
+        ctx.stroke();
+      });
+    }
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  // Fixed pieces that came with the house: `type: 'furniture'` (sinks,
+  // built-in cabinets) draws like furniture but with a dashed border and a
+  // lock glyph; `type: 'wall'` (a pillar/duct, a partition) draws as a
+  // plain solid block matching the wall stroke, no label. Neither is part
+  // of hit-testing/dragging — they aren't in `this.items`.
   _drawFixedItems() {
     const { ctx } = this;
     this.fixedItems.forEach((item) => {
@@ -262,25 +297,33 @@ export class FloorPlanView {
       const s = this.toScreen(item.x, item.y);
       ctx.translate(s.x, s.y);
       ctx.rotate((item.rotation * Math.PI) / 180);
-      ctx.fillStyle = item.color;
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([4, 3]);
 
       const w = item.width * this.scale;
       const h = item.height * this.scale;
       ctx.beginPath();
       ctx.rect(-w / 2, -h / 2, w, h);
-      ctx.fill();
-      ctx.stroke();
-      ctx.setLineDash([]);
 
-      ctx.rotate((-item.rotation * Math.PI) / 180);
-      ctx.fillStyle = '#222';
-      ctx.font = '11px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(`🔒 ${item.label}`, 0, 0);
+      if (item.type === 'wall') {
+        ctx.fillStyle = '#2c2c2c';
+        ctx.fill();
+      } else {
+        ctx.fillStyle = item.color;
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 3]);
+        ctx.fill();
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      if (item.type !== 'wall') {
+        ctx.rotate((-item.rotation * Math.PI) / 180);
+        ctx.fillStyle = '#222';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`🔒 ${item.label}`, 0, 0);
+      }
       ctx.restore();
     });
   }

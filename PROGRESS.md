@@ -30,16 +30,27 @@ check items off, add new ones, don't let it drift from reality.
       guarda-roupa, a pillar/duct) with reconstructed positions. Added
       fixed-furniture rendering to `FloorPlanView` (dashed border + 🔒,
       not draggable/deletable).
+- [x] First visual-review round from the user: fixed a wall-outline z-order
+      bug (fixed items flush against a wall were painting over the wall
+      line — outline now drawn last, on top), added real wall-opening
+      rendering (`floorPlan.openings`, types `'open'`/`'glass'`), restyled
+      the pillar as a solid wall block instead of locked furniture, and
+      moved the unidentified 1.11x0.35 piece out of `fixedFurniture` into a
+      new `defaultItems` concept (pre-placed but freely movable/removable,
+      seeded only when there's no saved layout yet) — it's a loose
+      countertop board ("Bancada"), not fixed to the house.
 
 ## Next
 
-- [ ] **Visually review the kitchen in the app** against the original
-      sketch/tape measurements — this is faster than more back-and-forth
-      over text. In particular confirm:
-  - The unidentified 1.11 x 0.35 element near the bottom-right corner
-    (placeholder labeled "? (a confirmar)" in the app right now)
-  - That the fixed-furniture positions actually look right against the
-    real room
+- [ ] **Another visual review round** — this round's biggest guess: the
+      opening beside the pillar (`wall: 1, offset: 0.61, width: 1.22,
+      type: 'open'` in `room-data.js`) leading to the entrance/geladeira
+      space. The width (1.22m = remaining wall length after the 0.61m
+      pillar stub) is inferred, not directly measured — confirm it looks
+      right, or correct it.
+  - Also worth a glance: whether the two glass dividers (`type: 'glass'`,
+    dashed blue lines) should actually be full openings (`type: 'open'`)
+    instead — the user's wording leaned toward "open space" for both.
 - [ ] Kitchen wall elevations (`wallViews` in `room-data.js`) are still
       placeholder — deferred at the user's request until the floor plan
       is confirmed solid. Come back to these (heights, door/window

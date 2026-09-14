@@ -4,18 +4,16 @@
 // from the user's hand measurements + clarification. Coordinates: x runs
 // along the 3.84m wall (0 = left end), y along the 1.83m depth (0 = the
 // wall holding the sink/utility nook, 1.83 = the wall holding the wardrobe
-// /cabinets). See PROGRESS.md for what's still open (one unidentified
-// element, wall elevations/heights deferred until the floor plan is solid).
+// /cabinets).
 
 export const ROOM = {
   id: 'cozinha',
   name: 'Cozinha',
 
   // Top-down outline as wall segments walked clockwise from (0,0), heading
-  // east initially. `turn` = heading change in degrees after that wall.
-  // Simplified as a plain rectangle — the two small real wall elements
-  // (pilar + partition, see fixedFurniture below, type: 'wall') aren't
-  // folded into this outline yet, just drawn on top of it.
+  // east initially (segment 0 = top/pia wall, 1 = right wall, 2 = bottom
+  // /armários wall, 3 = left wall — matches the `wall` index used below in
+  // `openings`). `turn` = heading change in degrees after that wall.
   floorPlan: {
     startPoint: { x: 0, y: 0 },
     segments: [
@@ -24,9 +22,25 @@ export const ROOM = {
       { length: 3.84, turn: 90 }, // parede do guarda-roupa/armário
       { length: 1.83, turn: 90 }, // parede esquerda (fecha o polígono)
     ],
-    // Doors/windows along a wall: { wall: <segment index>, offset, width, type }.
-    // Deferred along with wall elevations — see PROGRESS.md.
-    openings: [],
+    // { wall: <segment index>, offset, width, type } — offset/width in
+    // meters measured along that wall from its start point (in the
+    // direction the outline is walked, i.e. clockwise). type 'open' = no
+    // wall at all (a real gap); 'glass' = a glass panel, drawn distinct
+    // from solid wall.
+    openings: [
+      // Entre o tanque e a pia (parede 0): painel de vidro (não é porta de
+      // batente, como o usuário esclareceu).
+      { wall: 0, offset: 1.18, width: 0.60, type: 'glass' },
+      // Ao lado do pilar/duto (parede direita, 1): o pilar cobre só os
+      // primeiros 0,61m a partir do canto; o resto da parede é aberto —
+      // acesso à entrada / vão para a geladeira. TODO: confirmar com o
+      // usuário se a largura exata (1,22m) está certa ao revisar o
+      // desenho renderizado.
+      { wall: 1, offset: 0.61, width: 1.22, type: 'open' },
+      // Entre o guarda-roupa e os armários (parede 2): "espaço aberto",
+      // conforme o usuário descreveu explicitamente duas vezes.
+      { wall: 2, offset: 2.46, width: 0.77, type: 'glass' },
+    ],
   },
 
   // Fixed pieces that came with the house — not draggable, can't be moved
@@ -74,6 +88,9 @@ export const ROOM = {
       color: '#a9886b',
     },
     {
+      // A stub of the right wall (not furniture) separating the kitchen
+      // from the entrance — the rest of that wall is open, see `openings`
+      // (wall: 1) above.
       id: 'pilar-topo',
       label: 'Pilar / duto',
       type: 'wall',
@@ -82,13 +99,19 @@ export const ROOM = {
       rotation: 0,
       color: '#555555',
     },
+  ],
+
+  // Pre-placed but movable/removable — unlike fixedFurniture, the user can
+  // drag or delete these like any other furniture; only seeded when there's
+  // no saved layout yet (see FloorPlanView constructor).
+  defaultItems: [
     {
-      // TODO: unidentified — ask the user what this is when reviewing the
-      // rendered plan. Position derived from the bottom-wall measurements;
-      // width/depth are solid (1.11 x 0.35), just missing a label.
-      id: 'elemento-nao-identificado',
-      label: '? (a confirmar)',
-      type: 'unknown',
+      // Two loose wood boards resting against the armário — a small
+      // worktop, not attached to the house.
+      id: 'bancada-cozinha',
+      catalogId: 'bancada-cozinha',
+      label: 'Bancada',
+      shape: 'rect',
       x: 3.285, y: 1.655,
       width: 1.11, height: 0.35,
       rotation: 0,
