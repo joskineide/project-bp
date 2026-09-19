@@ -1,0 +1,551 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f5f5f0;
+  color: #222;
+  overscroll-behavior: none;
+}
+
+.room-picker-bar {
+  display: flex;
+  padding: 8px 12px;
+  background: #eef6f0;
+  border-bottom: 1px solid #ddd;
+}
+.room-picker-bar label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #2c6e49;
+  font-weight: 600;
+}
+.room-picker-bar select {
+  flex: 1;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #cdd;
+  background: #fff;
+  font-size: 0.9rem;
+  color: #222;
+}
+
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+}
+.tab-button {
+  flex: 1;
+  padding: 10px 6px;
+  border: none;
+  background: none;
+  font-size: 0.85rem;
+  color: #555;
+  cursor: pointer;
+}
+.tab-button.active {
+  color: #2c6e49;
+  font-weight: 600;
+  border-bottom: 2px solid #2c6e49;
+}
+
+main {
+  padding: 0;
+}
+
+.tab-panel {
+  display: none;
+  flex-direction: column;
+  height: calc(100vh - 42px);
+  height: calc(100dvh - 42px);
+  overflow-y: auto;
+}
+.tab-panel.active {
+  display: flex;
+}
+
+.canvas-wrap {
+  flex: 1 0 220px;
+  min-height: 220px;
+  position: relative;
+  background: #fff;
+  margin: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+canvas {
+  display: block;
+  touch-action: none;
+  cursor: grab;
+}
+canvas.panning {
+  cursor: grabbing;
+}
+canvas.measuring {
+  cursor: crosshair;
+}
+canvas.moving-room {
+  cursor: move;
+}
+
+.toolbox {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  overflow-x: auto;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+.tool-chip {
+  flex: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #cdd;
+  background: #eef6f0;
+  color: #2c6e49;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.measure-toolbar button {
+  flex: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #b5179e;
+  background: #fdf0fb;
+  color: #b5179e;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.measure-toolbar button.active {
+  background: #b5179e;
+  color: #fff;
+}
+
+.measurement-edit-panel {
+  background: #fdf0fb;
+  border-top: 1px solid #edb8e2;
+  border-bottom: 1px solid #edb8e2;
+}
+.measurement-edit-panel .wall-edit-row {
+  color: #8a1478;
+}
+.measurement-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+.measurement-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+  color: #8a1478;
+  flex: 1 1 80px;
+}
+.measurement-fields input {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #edb8e2;
+  font-size: 0.95rem;
+}
+.measurement-edit-panel > button.danger {
+  align-self: flex-start;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e63946;
+  background: #fff;
+  color: #e63946;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.admin-toolbox {
+  display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  background: #fff7e8;
+  border-top: 1px solid #f0d9a8;
+  border-bottom: 1px solid #f0d9a8;
+}
+.admin-toolbox.visible {
+  display: flex;
+}
+.admin-toolbox button {
+  flex: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cba35c;
+  background: #fff;
+  color: #8a5a00;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.admin-toolbox button.active {
+  background: #cba35c;
+  color: #fff;
+}
+.admin-toolbox button.danger {
+  color: #e63946;
+  border-color: #e63946;
+}
+.admin-hint {
+  flex: 1 1 100%;
+  margin: 0;
+  padding: 0 4px 6px;
+  text-align: left;
+  font-size: 0.75rem;
+  color: #8a6d3b;
+}
+.admin-room-actions {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px dashed #f0d9a8;
+}
+.admin-room-actions button,
+.admin-room-actions .file-button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #cba35c;
+  background: #fff;
+  color: #8a5a00;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.admin-room-actions button.danger {
+  border-color: #e63946;
+  color: #e63946;
+}
+
+.action-bar {
+  display: none;
+  gap: 8px;
+  padding: 8px;
+  justify-content: center;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+.action-bar.visible {
+  display: flex;
+}
+.action-bar button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f8f8f6;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.action-bar button.danger {
+  color: #e63946;
+  border-color: #e63946;
+}
+
+.wall-edit-panel {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff7e8;
+  border-top: 1px solid #f0d9a8;
+  border-bottom: 1px solid #f0d9a8;
+}
+.wall-edit-panel.visible {
+  display: flex;
+}
+.wall-edit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #8a5a00;
+  font-size: 0.85rem;
+}
+.wall-edit-row button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #cba35c;
+  background: #fff;
+  color: #8a5a00;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.wall-edit-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+  color: #8a5a00;
+  max-width: 160px;
+}
+.wall-edit-panel input {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #cba35c;
+  font-size: 0.95rem;
+}
+.wall-openings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.opening-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 6px 10px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #f0d9a8;
+  border-radius: 8px;
+}
+.opening-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.7rem;
+  color: #666;
+  flex: 1 1 70px;
+}
+.opening-row input {
+  padding: 5px 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.85rem;
+  width: 100%;
+}
+.opening-row button {
+  flex: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f8f8f6;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.opening-row button.opening-type {
+  border-color: #7ec8e3;
+  color: #2c6e49;
+}
+.opening-row button.opening-remove {
+  color: #e63946;
+  border-color: #e63946;
+}
+.wall-opening-add {
+  display: flex;
+  gap: 8px;
+}
+.wall-opening-add button {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #cba35c;
+  background: #fff;
+  color: #8a5a00;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.wall-draw-glass-row {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 6px;
+}
+
+.wall-draw-segment-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 6px 8px;
+  background: #fff;
+  border: 1px solid #f0d9a8;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: #8a5a00;
+}
+.wall-draw-segment-row input[type='number'] {
+  width: 70px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.85rem;
+}
+.wall-draw-segment-row .wall-draw-remove {
+  margin-left: auto;
+  color: #e63946;
+  border-color: #e63946;
+  background: #fff;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.edit-panel {
+  display: none;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 10px 8px;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+.edit-panel.visible {
+  display: flex;
+}
+.edit-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+  color: #555;
+  flex: 1 1 120px;
+}
+.edit-panel input {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  width: 100%;
+}
+#edit-width-height-fields {
+  display: contents;
+}
+#edit-radius-field {
+  display: none;
+}
+#edit-notch-fields {
+  display: none;
+}
+.edit-color-field {
+  flex: 0 0 auto !important;
+}
+.edit-color-field input[type='color'] {
+  width: 44px;
+  height: 34px;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.layout-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  justify-content: center;
+  align-items: center;
+}
+.layout-actions button,
+.file-button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f8f8f6;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #444;
+}
+.file-button {
+  display: inline-flex;
+  align-items: center;
+}
+
+.clear-all {
+  margin: 0;
+  padding: 8px;
+  border: none;
+  background: none;
+  color: #999;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.hint {
+  text-align: center;
+  color: #888;
+  font-size: 0.85rem;
+  padding: 8px;
+}
+
+/* Floating undo / zoom buttons over the floor-plan canvas — touch-sized
+   (44px) since there's no Ctrl+Z or scroll wheel on a phone. */
+.canvas-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.canvas-controls button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #cdd;
+  background: rgba(255, 255, 255, 0.92);
+  color: #2c6e49;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  touch-action: manipulation;
+}
+.canvas-controls button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* X/Y (and any other precision-only field) is admin-only — the family
+   member just drags, exact coordinates would only be a distraction. */
+.admin-only {
+  display: none !important;
+}
+body.admin-mode .admin-only {
+  display: flex !important;
+}
+
+.wall-remove-button {
+  flex: 0 0 auto;
+  align-self: flex-end;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e63946;
+  color: #e63946;
+  background: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* Fixed height so the wall canvas never resizes when the object panel appears mid-drag. */
+#wall-view .canvas-wrap {
+  flex: none;
+  height: clamp(280px, 45vh, 460px);
+}
+#wall-view > * {
+  flex-shrink: 0;
+}
+
+#wall-view .canvas-controls {
+  right: auto;
+  left: 8px;
+}
+
+.measure-toolbar button.danger {
+  border-color: #e63946;
+  color: #e63946;
+  background: #fff;
+}
